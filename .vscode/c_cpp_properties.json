@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        {
+            "name": "Cygwin64",
+            "includePath": [
+                "${workspaceFolder}/src"
+            ],
+            "compilerPath": "C:/cygwin64/bin/g++.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
+}

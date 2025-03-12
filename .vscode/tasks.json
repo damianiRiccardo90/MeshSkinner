@@ -1,0 +1,24 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compile C++ with Cygwin",
+            "type": "shell",
+            "command": "C:/cygwin64/bin/g++.exe",
+            "args": [
+                "-g",
+                "${workspaceFolder}/src/main.cpp",
+                "-o",
+                "${workspaceFolder}/build/main.exe"
+            ],
+            "options": {
+                "env": {
+                    "PATH": "C:\\cygwin64\\bin;${env:PATH}"
+                }
+            },
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Compiles the C++ program using Cygwin's g++"
+        }
+    ]
+}
