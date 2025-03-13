@@ -36,6 +36,24 @@
             "dependsOn": "Configure (CMake)",
             "problemMatcher": [],
             "detail": "CMake build step"
+        },
+        {
+            "label": "Build Tests (CMake)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "build",
+                "--target", "MeshSkinnerTests"
+            ],
+            "options": {
+                "env": {
+                    "PATH": "C:\\cygwin64\\bin;${env:PATH}"
+                }
+            },
+            "group": "build",
+            "dependsOn": "Configure (CMake)",
+            "problemMatcher": [],
+            "detail": "CMake build step"
         }
     ]
 }

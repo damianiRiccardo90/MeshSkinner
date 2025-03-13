@@ -3,7 +3,8 @@
         {
             "name": "Cygwin64",
             "includePath": [
-                "${workspaceFolder}/src"
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/third_party"
             ],
             "compilerPath": "C:/cygwin64/bin/g++.exe",
             "cStandard": "c11",

@@ -2,14 +2,41 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run/Debug with Cygwin (CMake)",
+            "name": "Run with Cygwin (CMake)",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/MeshSkinner.exe",
+            "args": [
+                "${workspaceFolder}/asset/test_mesh.obj",
+                "${workspaceFolder}/asset/bone_weight.json",
+                "${workspaceFolder}/asset/inverse_bind_pose.json",
+                "${workspaceFolder}/asset/new_pose.json"
+            ],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build (CMake)",
+            "externalConsole": true,
+            "stopAtEntry": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:/cygwin64/bin/gdb.exe",
+            "sourceFileMap": {
+                "/cygdrive/c": "C:\\"
+            },
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "Run Tests (CMake)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/MeshSkinnerTests.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
-            // This ensures we always build before running/debugging
-            "preLaunchTask": "Build (CMake)",
+            "preLaunchTask": "Build Tests (CMake)",
             "externalConsole": true,
             "stopAtEntry": false,
             "MIMode": "gdb",
