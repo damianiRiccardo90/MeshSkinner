@@ -2,13 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run/Debug Cygwin",
+            "name": "Run/Debug with Cygwin (CMake)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/main.exe",
+            "program": "${workspaceFolder}/build/MeshSkinner.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
-            "preLaunchTask": "Compile C++ with Cygwin",
+            // This ensures we always build before running/debugging
+            "preLaunchTask": "Build (CMake)",
             "externalConsole": true,
             "stopAtEntry": false,
             "MIMode": "gdb",

@@ -2,14 +2,30 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Compile C++ with Cygwin",
+            "label": "Configure (CMake)",
             "type": "shell",
-            "command": "C:/cygwin64/bin/g++.exe",
+            "command": "cmake",
             "args": [
-                "-g",
-                "${workspaceFolder}/src/main.cpp",
-                "-o",
-                "${workspaceFolder}/build/main.exe"
+                "-B", "build",
+                "-S", ".",
+                "-G", "Ninja"
+            ],
+            "options": {
+                "env": {
+                    // Ensure Cygwin bin is in PATH
+                    "PATH": "C:\\cygwin64\\bin;${env:PATH}"
+                }
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "CMake configure step"
+        },
+        {
+            "label": "Build (CMake)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "build"
             ],
             "options": {
                 "env": {
@@ -17,8 +33,9 @@
                 }
             },
             "group": "build",
-            "problemMatcher": ["$gcc"],
-            "detail": "Compiles the C++ program using Cygwin's g++"
+            "dependsOn": "Configure (CMake)",
+            "problemMatcher": [],
+            "detail": "CMake build step"
         }
     ]
 }
