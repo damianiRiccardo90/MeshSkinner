@@ -29,6 +29,13 @@ public:
      */
     static HMM_Mat4 create_orthographic(float left, float right, float bottom,
                                         float top, float nearZ, float farZ);
+    
+    /**
+     * @brief Computes the inverse of a 4x4 matrix.
+     * @param matrix The matrix to invert.
+     * @return The inverse of the input matrix.
+     */
+    static HMM_Mat4 inverse(const HMM_Mat4& matrix);
 
     /**
      * @brief Multiplies two 4x4 matrices.

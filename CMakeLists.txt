@@ -3,6 +3,7 @@ project(MeshSkinner)
 
 # Include third-party libraries
 include_directories(third_party/handmade_math)
+include_directories(third_party/indicators)
 include_directories(third_party/nlohmann)
 include_directories(third_party/tiny_obj_loader)
 

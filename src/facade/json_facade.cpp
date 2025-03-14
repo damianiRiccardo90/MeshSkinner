@@ -56,13 +56,6 @@ Json Json::make_object()
     return result;
 }
 
-Json Json::make_array() 
-{
-    Json result;
-    *result.impl = JsonAlias::array();
-    return result;
-}
-
 void Json::set(const std::string& key, int value) 
 {
     (*impl)[key] = value;
@@ -81,6 +74,53 @@ void Json::set(const std::string& key, const std::string& value)
 void Json::set(const std::string& key, bool value) 
 {
     (*impl)[key] = value;
+}
+
+void Json::set(const std::string& key, const Json& value)
+{
+    (*impl)[key] = *value.impl;
+}
+
+Json Json::make_array() 
+{
+    Json result;
+    *result.impl = JsonAlias::array();
+    return result;
+}
+
+size_t Json::size() const 
+{
+    return impl->size();
+}
+
+Json Json::at(size_t index) const 
+{
+    return Json(impl->at(index));
+}
+
+void Json::push_back(const Json& value) 
+{
+    impl->push_back(*value.impl);
+}
+
+void Json::push_back(int value) 
+{
+    impl->push_back(value);
+}
+
+void Json::push_back(unsigned int value)
+{
+    impl->push_back(value);
+}
+
+void Json::push_back(float value) 
+{
+    impl->push_back(value);
+}
+
+void Json::push_back(const std::string& value) 
+{
+    impl->push_back(value);
 }
 
 // JsonFacade implementation

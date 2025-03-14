@@ -99,12 +99,6 @@ public:
      * @return A new Json object instance.
      */
     static Json make_object();
-
-    /**
-     * @brief Creates a new JSON array.
-     * @return A new Json array instance.
-     */
-    static Json make_array();
     
     /**
      * @brief Sets an integer value for the specified key in a JSON object.
@@ -137,7 +131,75 @@ public:
      * @throws nlohmann::json::type_error if the current value is not an object.
      */
     void set(const std::string& key, bool value);
-    
+
+    /**
+     * @brief Sets a Json value for the specified key in a JSON object.
+     * @param key The key for the value.
+     * @param value The Json value to set.
+     * @throws nlohmann::json::type_error if the current value is not an object.
+     */
+    void set(const std::string& key, const Json& value);
+
+    // -------------------------------------------------------------------------
+    // Array operations
+    // -------------------------------------------------------------------------
+
+    /**
+     * @brief Creates a new JSON array.
+     * @return A new Json array instance.
+     */
+    static Json make_array();
+
+    /**
+     * @brief Gets the size of a JSON array.
+     * @return The number of elements in the array.
+     * @throws nlohmann::json::type_error if the value is not an array.
+     */
+    size_t size() const;
+
+    /**
+     * @brief Accesses the element at the specified index in a JSON array.
+     * @param index The index of the element to access.
+     * @return The Json value at the specified index.
+     * @throws nlohmann::json::out_of_range if the index is out of range.
+     */
+    Json at(size_t index) const;
+
+    /**
+     * @brief Adds a value to the end of a JSON array.
+     * @param value The Json value to add.
+     * @throws nlohmann::json::type_error if the value is not an array.
+     */
+    void push_back(const Json& value);
+
+    /**
+     * @brief Adds an integer to the end of a JSON array.
+     * @param value The integer value to add.
+     * @throws nlohmann::json::type_error if the value is not an array.
+     */
+    void push_back(int value);
+
+    /**
+     * @brief Adds an unsigned integer to the end of a JSON array.
+     * @param value The unsigned integer value to add.
+     * @throws nlohmann::json::type_error if the value is not an array.
+     */
+    void push_back(unsigned int value);
+
+    /**
+     * @brief Adds a float to the end of a JSON array.
+     * @param value The float value to add.
+     * @throws nlohmann::json::type_error if the value is not an array.
+     */
+    void push_back(float value);
+
+    /**
+     * @brief Adds a string to the end of a JSON array.
+     * @param value The string value to add.
+     * @throws nlohmann::json::type_error if the value is not an array.
+     */
+    void push_back(const std::string& value);
+
 private:
 
     // The actual implementation, hidden from clients
