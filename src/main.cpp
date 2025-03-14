@@ -31,10 +31,15 @@ int main(int argc, char* argv[])
     if (!skinner.load_mesh(argv[1])) return 1;
     if (!skinner.load_weights(argv[2])) return 1;
     if (!skinner.load_bind_pose(argv[3])) return 1;
+
     // Perform the skinning operation
     if (!skinner.perform_skinning()) return 1;
+
     // Save the result
     if (!skinner.save_skinned_mesh(argv[4])) return 1;
+    
+    // Print timing metrics
+    skinner.print_timing_metrics();
     
     // Wait for input so the console doesn't close immediately
     std::cout << "Press Enter to exit...";

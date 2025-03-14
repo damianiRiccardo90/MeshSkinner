@@ -1,5 +1,9 @@
+#pragma once
+
 // Standard library imports
+#include <chrono>
 #include <string>
+#include <unordered_map>
 
 // Local application imports
 #include "model/mesh.h"
@@ -65,6 +69,11 @@ public:
      */
     const Mesh& get_skinned_mesh() const;
 
+    /**
+     * @brief Prints all collected performance timing metrics to the console.
+     */
+    void print_timing_metrics() const;
+
 protected:
     
     /**
@@ -76,6 +85,13 @@ protected:
      * @brief Applies the skinning matrices to deform the vertices.
      */
     void apply_vertex_transformations();
+
+    /**
+     * @brief Records the execution time of an operation.
+     * @param operation_name The name of the operation being timed.
+     * @param duration The duration in milliseconds.
+     */
+    void record_timing(const std::string& operation_name, double duration);
 
     // Threshold below which joint weights are considered negligible.
     static const float WEIGHT_THRESHOLD;
@@ -92,4 +108,7 @@ private:
     Skeleton bind_pose;
     // The skeleton in the new pose to deform toward.
     Skeleton new_pose;
+
+    // Performance tracking
+    std::unordered_map<std::string, double> timing_metrics;
 };

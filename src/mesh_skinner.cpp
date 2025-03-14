@@ -1,6 +1,7 @@
 #include "mesh_skinner.h"
 
 // Standard library imports
+#include <iomanip>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -213,10 +214,30 @@ bool MeshSkinner::perform_skinning()
                   << original_mesh.vertices.size() << ")" << std::endl;
         return false;
     }
+
+    // Record the total skinning time
+    const auto total_start = std::chrono::high_resolution_clock::now();
+
+    // Calculate and apply vertex transformations with timing
+
+    const auto calc_start = std::chrono::high_resolution_clock::now();
+    calculate_vertex_transformations(); // Function to be measured
+    const auto calc_end = std::chrono::high_resolution_clock::now();
+
+    const std::chrono::duration<double, std::milli> calc_duration = calc_end - calc_start;
+    record_timing("Calculate Transformations", calc_duration.count());
     
-    // Calculate and apply vertex transformations
-    calculate_vertex_transformations();
-    apply_vertex_transformations();
+    const auto apply_start = std::chrono::high_resolution_clock::now();
+    apply_vertex_transformations(); // Function to be measured
+    const auto apply_end = std::chrono::high_resolution_clock::now();
+
+    const std::chrono::duration<double, std::milli> apply_duration = apply_end - apply_start;
+    record_timing("Apply Transformations", apply_duration.count());
+
+    const auto total_end = std::chrono::high_resolution_clock::now();
+
+    const std::chrono::duration<double, std::milli> total_duration = total_end - total_start;
+    record_timing("Total Skinning Time", total_duration.count());
     
     std::cout << "Skinning completed successfully" << std::endl;
     return true;
@@ -267,20 +288,53 @@ const Mesh &MeshSkinner::get_skinned_mesh() const
     return skinned_mesh;
 }
 
+void MeshSkinner::print_timing_metrics() const
+{
+    if (timing_metrics.empty())
+    {
+        std::cout << "No timing metrics available." << std::endl;
+        return;
+    }
+    
+    std::cout << "\n===== Performance Timing Metrics =====\n";
+    std::cout << std::left << std::setw(35) << "Operation" 
+              << std::right << std::setw(15) << "Time (ms)" << std::endl;
+    std::cout << std::string(50, '-') << std::endl;
+    
+    for (const auto& metric : timing_metrics)
+    {
+        std::cout << std::left << std::setw(35) << metric.first 
+                  << std::right << std::setw(15) << std::fixed << std::setprecision(3) 
+                  << metric.second << std::endl;
+    }
+    std::cout << std::string(50, '-') << std::endl;
+}
+
 void MeshSkinner::calculate_vertex_transformations()
 {
     // Clear existing transformation data
     skin_data.skinning_matrices.clear();
     
-    // Calculate global transforms for bind pose
+    // Calculate global transforms for bind pose (while recording timing)
+    const auto bind_start = std::chrono::high_resolution_clock::now();
     std::vector<HMM_Mat4> bind_global_transforms;
     bind_pose.calculate_global_transforms(bind_global_transforms);
+    const auto bind_end = std::chrono::high_resolution_clock::now();
+
+    const std::chrono::duration<double, std::milli> bind_duration = bind_end - bind_start;
+    record_timing("Calculate Bind Global Transforms", bind_duration.count());
     
-    // Calculate global transforms for new pose
+    // Calculate global transforms for new pose (while recording timing)
+    const auto new_start = std::chrono::high_resolution_clock::now();
     std::vector<HMM_Mat4> new_global_transforms;
     new_pose.calculate_global_transforms(new_global_transforms);
+    const auto new_end = std::chrono::high_resolution_clock::now();
+
+    const std::chrono::duration<double, std::milli> new_duration = new_end - new_start;
+    record_timing("Calculate New Global Transforms", new_duration.count());
     
     // Calculate skinning matrices (new_pose * inverse_bind_pose)
+    const auto matrices_start = std::chrono::high_resolution_clock::now();
     for (size_t i = 0; i < bind_global_transforms.size(); i++) 
     {
         const HMM_Mat4 inverse_bind = 
@@ -290,6 +344,10 @@ void MeshSkinner::calculate_vertex_transformations()
         
         skin_data.skinning_matrices.push_back(skinning_matrix);
     }
+    const auto matrices_end = std::chrono::high_resolution_clock::now();
+
+    const std::chrono::duration<double, std::milli> matrices_duration = matrices_end - matrices_start;
+    record_timing("Calculate Skinning Matrices", matrices_duration.count());
 }
 
 void MeshSkinner::apply_vertex_transformations()
@@ -309,6 +367,9 @@ void MeshSkinner::apply_vertex_transformations()
         indicators::option::ShowPercentage{true},
         indicators::option::PrefixText{"Applying skinning"}
     };
+
+    // Track the skinning loop timing
+    const auto skinning_start = std::chrono::high_resolution_clock::now();
     
     // Apply linear blend skinning to each vertex
     for (size_t i = 0; i < total_vertices; i++) 
@@ -352,7 +413,16 @@ void MeshSkinner::apply_vertex_transformations()
         progress_bar.set_progress(static_cast<float>(i + 1) / total_vertices * 100);
     }
 
+    const auto skinning_end = std::chrono::high_resolution_clock::now();
+    const std::chrono::duration<double, std::milli> skinning_duration = skinning_end - skinning_start;
+    record_timing("Vertex Skinning Loop", skinning_duration.count());
+
     // Ensure progress bar shows 100% at the end
     progress_bar.set_progress(100);
     std::cout << std::endl << "Skinning completed successfully" << std::endl;
+}
+
+void MeshSkinner::record_timing(const std::string& operation_name, double duration)
+{
+    timing_metrics[operation_name] = duration;
 }
