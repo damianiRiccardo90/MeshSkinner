@@ -2,6 +2,7 @@
 
 // Standard library imports
 #include <vector>
+#include <string>
 #include <utility>
 
 // Third-party imports
@@ -77,5 +78,46 @@ bool is_vertex_connected(const std::vector<Face>& faces, size_t vertex_index);
  *         Returns {{0,0,0}, {0,0,0}} if the vertices vector is empty.
  */
 std::pair<HMM_Vec3, HMM_Vec3> calculate_mesh_bounds(const std::vector<HMM_Vec3>& vertices);
+
+/**
+ * @brief Enumeration of console text colors.
+ */
+enum class ConsoleColor {
+    Default,
+    Red,
+    Green,
+    Yellow,
+    Blue,
+    Magenta,
+    Cyan,
+    White
+};
+
+/**
+ * @brief Sets the console text color.
+ *
+ * This function changes the color of text output to the console.
+ * It works cross-platform, using Windows API on Windows and ANSI escape codes on other platforms.
+ *
+ * @param color The color to set the console text to.
+ */
+void set_console_color(ConsoleColor color);
+
+/**
+ * @brief Resets the console text color to default.
+ *
+ * This function resets the console text color back to the default color.
+ */
+void reset_console_color();
+
+/**
+ * @brief Prints colored text to the console.
+ *
+ * This function prints text in the specified color and then resets the color back to default.
+ *
+ * @param text The text to print.
+ * @param color The color to use for the text.
+ */
+void print_colored(const std::string& text, ConsoleColor color);
 
 } // namespace TestUtils

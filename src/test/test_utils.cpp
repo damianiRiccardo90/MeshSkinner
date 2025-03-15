@@ -2,9 +2,15 @@
 
 // Standard library imports
 #include <cmath>
+#include <iostream>
 
 // Local application imports
 #include "model/mesh.h"
+
+// Platform-specific includes
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 
 namespace TestUtils {
@@ -74,6 +80,93 @@ std::pair<HMM_Vec3, HMM_Vec3> calculate_mesh_bounds(const std::vector<HMM_Vec3>&
     }
     
     return {min_bounds, max_bounds};
+}
+
+void set_console_color(ConsoleColor color)
+{
+#ifdef _WIN32
+    // Windows implementation
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    WORD colorAttribute = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE; // Default
+
+    switch (color)
+    {
+        case ConsoleColor::Red:
+            colorAttribute = FOREGROUND_RED | FOREGROUND_INTENSITY;
+            break;
+        case ConsoleColor::Green:
+            colorAttribute = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+            break;
+        case ConsoleColor::Yellow:
+            colorAttribute = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+            break;
+        case ConsoleColor::Blue:
+            colorAttribute = FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+            break;
+        case ConsoleColor::Magenta:
+            colorAttribute = FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+            break;
+        case ConsoleColor::Cyan:
+            colorAttribute = FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+            break;
+        case ConsoleColor::White:
+            colorAttribute = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+            break;
+        case ConsoleColor::Default:
+        default:
+            colorAttribute = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+            break;
+    }
+
+    SetConsoleTextAttribute(hConsole, colorAttribute);
+#else
+    // ANSI escape codes for Unix-like systems
+    switch (color)
+    {
+        case ConsoleColor::Red:
+            std::cout << "\033[1;31m";
+            break;
+        case ConsoleColor::Green:
+            std::cout << "\033[1;32m";
+            break;
+        case ConsoleColor::Yellow:
+            std::cout << "\033[1;33m";
+            break;
+        case ConsoleColor::Blue:
+            std::cout << "\033[1;34m";
+            break;
+        case ConsoleColor::Magenta:
+            std::cout << "\033[1;35m";
+            break;
+        case ConsoleColor::Cyan:
+            std::cout << "\033[1;36m";
+            break;
+        case ConsoleColor::White:
+            std::cout << "\033[1;37m";
+            break;
+        case ConsoleColor::Default:
+        default:
+            std::cout << "\033[0m";
+            break;
+    }
+#endif
+}
+
+void reset_console_color()
+{
+#ifdef _WIN32
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+#else
+    std::cout << "\033[0m";
+#endif
+}
+
+void print_colored(const std::string& text, ConsoleColor color)
+{
+    set_console_color(color);
+    std::cout << text;
+    reset_console_color();
 }
 
 } // namespace TestUtils

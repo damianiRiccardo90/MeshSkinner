@@ -27,7 +27,8 @@ TestSuite create_skeleton_tests()
             const Json json_data = JsonFacade::load_from_file("asset/inverse_bind_pose.json");
             const Skeleton skeleton = Skeleton::from_json(json_data);
 
-            std::cout << "Loading bind pose: Success\n";
+            TestUtils::print_colored("Loading bind pose: Success\n", 
+                TestUtils::ConsoleColor::Green);
 
             std::cout << "Loaded skeleton with " << skeleton.joints.size() 
                       << " joints\n";
@@ -36,7 +37,9 @@ TestSuite create_skeleton_tests()
         } 
         catch (const std::exception& e) 
         {
+            TestUtils::set_console_color(TestUtils::ConsoleColor::Red);
             std::cout << "Loading bind pose failed: " << e.what() << std::endl;
+            TestUtils::reset_console_color();
             return false;
         }
     });
@@ -48,7 +51,8 @@ TestSuite create_skeleton_tests()
             const Json json_data = JsonFacade::load_from_file("asset/output_pose.json");
             const Skeleton skeleton = Skeleton::from_json(json_data);
 
-            std::cout << "Loading output pose: Success\n";
+            TestUtils::print_colored("Loading output pose: Success\n", 
+                TestUtils::ConsoleColor::Green);
 
             std::cout << "Loaded skeleton with " << skeleton.joints.size() 
                       << " joints\n";
@@ -57,7 +61,9 @@ TestSuite create_skeleton_tests()
         } 
         catch (const std::exception& e) 
         {
+            TestUtils::set_console_color(TestUtils::ConsoleColor::Red);
             std::cout << "Loading output pose failed: " << e.what() << std::endl;
+            TestUtils::reset_console_color();
             return false;
         }
     });
@@ -69,12 +75,14 @@ TestSuite create_skeleton_tests()
             const Json json_data = JsonFacade::load_from_file("asset/nonexistent_pose.json");
             const Skeleton skeleton = Skeleton::from_json(json_data);
 
-            std::cout << "Failed to reject nonexistent pose file\n";
+            TestUtils::print_colored("Failed to reject nonexistent pose file\n", 
+                TestUtils::ConsoleColor::Red);
             return false;
         } 
         catch (const std::exception& e) 
         {
-            std::cout << "Correctly rejected nonexistent pose file\n";
+            TestUtils::print_colored("Correctly rejected nonexistent pose file\n", 
+                TestUtils::ConsoleColor::Green);
             return true;
         }
     });
@@ -92,7 +100,8 @@ TestSuite create_skeleton_tests()
             const Json json_data = JsonFacade::load_from_file(tempFilePath);
             const Skeleton skeleton = Skeleton::from_json(json_data);
 
-            std::cout << "Failed to reject malformed JSON file\n";
+            TestUtils::print_colored("Failed to reject malformed JSON file\n", 
+                TestUtils::ConsoleColor::Red);
             
             // Clean up
             std::filesystem::remove(tempFilePath);
@@ -101,7 +110,8 @@ TestSuite create_skeleton_tests()
         } 
         catch (const std::exception& e) 
         {
-            std::cout << "Correctly rejected malformed JSON file\n";
+            TestUtils::print_colored("Correctly rejected malformed JSON file\n", 
+                TestUtils::ConsoleColor::Green);
             
             // Clean up
             std::filesystem::remove(tempFilePath);
@@ -113,7 +123,8 @@ TestSuite create_skeleton_tests()
     // Bone transformation tests
     suite.add_test("Bone Transformation Matrix Calculation", []() 
     {
-        std::cout << "Testing bone transformation matrices...\n";
+        TestUtils::print_colored("Testing bone transformation matrices...\n", 
+            TestUtils::ConsoleColor::Default);
         
         // Create a simple test skeleton with two joints
         Skeleton skeleton;
@@ -139,8 +150,10 @@ TestSuite create_skeleton_tests()
         // Verify correct number of transforms
         if (global_transforms.size() != 2) 
         {
+            TestUtils::set_console_color(TestUtils::ConsoleColor::Red);
             std::cout << "Incorrect number of global transforms: " 
                       << global_transforms.size() << std::endl;
+            TestUtils::reset_console_color();
             return false;
         }
         
@@ -156,17 +169,36 @@ TestSuite create_skeleton_tests()
             MathFacade::translate(1.f, 0.f, 0.f)
         );
         
+        TestUtils::set_console_color(root_correct ? 
+            TestUtils::ConsoleColor::Green : TestUtils::ConsoleColor::Red);
         std::cout << "Root bone transform correct: " 
                   << (root_correct ? "Yes" : "No") << std::endl;
+        TestUtils::reset_console_color();
+        
+        TestUtils::set_console_color(child_correct ? 
+            TestUtils::ConsoleColor::Green : TestUtils::ConsoleColor::Red);
         std::cout << "Child bone transform correct: " 
                   << (child_correct ? "Yes" : "No") << std::endl;
+        TestUtils::reset_console_color();
+        
+        if (root_correct && child_correct) 
+        {
+            TestUtils::print_colored("Bone transformation test passed!\n", 
+                TestUtils::ConsoleColor::Green);
+        } 
+        else 
+        {
+            TestUtils::print_colored("Bone transformation test failed.\n", 
+                TestUtils::ConsoleColor::Red);
+        }
         
         return root_correct && child_correct;
     });
     
     suite.add_test("Inverse Bind Pose Calculation", []() 
     {
-        std::cout << "Testing inverse bind pose calculation...\n";
+        TestUtils::print_colored("Testing inverse bind pose calculation...\n", 
+            TestUtils::ConsoleColor::Default);
         
         // Set up a simple bind pose skeleton
         Skeleton bind_pose;
@@ -212,10 +244,28 @@ TestSuite create_skeleton_tests()
         const bool child_inverse_correct = 
             TestUtils::approx_equal_mat4(result2, MathFacade::create_identity());
         
+        TestUtils::set_console_color(
+            root_inverse_correct ? TestUtils::ConsoleColor::Green : TestUtils::ConsoleColor::Red);
         std::cout << "Root inverse bind pose correct: " 
                   << (root_inverse_correct ? "Yes" : "No") << std::endl;
+        TestUtils::reset_console_color();
+        
+        TestUtils::set_console_color(
+            child_inverse_correct ? TestUtils::ConsoleColor::Green : TestUtils::ConsoleColor::Red);
         std::cout << "Child inverse bind pose correct: " 
                   << (child_inverse_correct ? "Yes" : "No") << std::endl;
+        TestUtils::reset_console_color();
+        
+        if (root_inverse_correct && child_inverse_correct) 
+        {
+            TestUtils::print_colored("Inverse bind pose test passed!\n", 
+                TestUtils::ConsoleColor::Green);
+        } 
+        else 
+        {
+            TestUtils::print_colored("Inverse bind pose test failed.\n", 
+                TestUtils::ConsoleColor::Red);
+        }
         
         return root_inverse_correct && child_inverse_correct;
     });
@@ -223,7 +273,8 @@ TestSuite create_skeleton_tests()
     // Test complex hierarchy
     suite.add_test("Complex Bone Hierarchy Transformation", []() 
     {
-        std::cout << "Testing complex bone hierarchy...\n";
+        TestUtils::print_colored("Testing complex bone hierarchy...\n", 
+            TestUtils::ConsoleColor::Default);
         
         // Create a more complex hierarchy
         // Root -> Child1 -> Child2
@@ -259,8 +310,10 @@ TestSuite create_skeleton_tests()
         
         if (global_transforms.size() != 4) 
         {
+            TestUtils::set_console_color(TestUtils::ConsoleColor::Red);
             std::cout << "Incorrect number of global transforms: " 
                       << global_transforms.size() << std::endl;
+            TestUtils::reset_console_color();
             return false;
         }
         
@@ -287,10 +340,28 @@ TestSuite create_skeleton_tests()
             expected_child3
         );
         
+        TestUtils::set_console_color(
+            child2_correct ? TestUtils::ConsoleColor::Green : TestUtils::ConsoleColor::Red);
         std::cout << "Child2 global transform correct: " 
                   << (child2_correct ? "Yes" : "No") << std::endl;
+        TestUtils::reset_console_color();
+        
+        TestUtils::set_console_color(
+            child3_correct ? TestUtils::ConsoleColor::Green : TestUtils::ConsoleColor::Red);
         std::cout << "Child3 global transform correct: " 
                   << (child3_correct ? "Yes" : "No") << std::endl;
+        TestUtils::reset_console_color();
+        
+        if (child2_correct && child3_correct) 
+        {
+            TestUtils::print_colored("Complex bone hierarchy test passed!\n", 
+                TestUtils::ConsoleColor::Green);
+        } 
+        else 
+        {
+            TestUtils::print_colored("Complex bone hierarchy test failed.\n", 
+                TestUtils::ConsoleColor::Red);
+        }
         
         return child2_correct && child3_correct;
     });

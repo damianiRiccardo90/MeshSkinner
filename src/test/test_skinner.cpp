@@ -7,6 +7,7 @@
 #include "mesh_skinner.h"
 #include "model/mesh.h"
 #include "test/test_framework.h"
+#include "test/test_utils.h"
 
 
 TestSuite create_skinner_tests() 
@@ -22,12 +23,23 @@ TestSuite create_skinner_tests()
 
             const bool success = skinner.load_mesh("asset/input_mesh.obj");
             
-            std::cout << "Loading mesh: " << (success ? "Success" : "Failed") << std::endl;
+            if (success) 
+            {
+                TestUtils::print_colored("Loading mesh: Success\n", 
+                    TestUtils::ConsoleColor::Green);
+            } 
+            else 
+            {
+                TestUtils::print_colored("Loading mesh: Failed\n", 
+                    TestUtils::ConsoleColor::Red);
+            }
             return success;
         } 
         catch (const std::exception& e) 
         {
+            TestUtils::set_console_color(TestUtils::ConsoleColor::Red);
             std::cout << "Loading mesh failed with exception: " << e.what() << std::endl;
+            TestUtils::reset_console_color();
             return false;
         }
     });
@@ -40,12 +52,23 @@ TestSuite create_skinner_tests()
 
             const bool success = skinner.load_weights("asset/bone_weights.json");
             
-            std::cout << "Loading weights: " << (success ? "Success" : "Failed") << std::endl;
+            if (success) 
+            {
+                TestUtils::print_colored("Loading weights: Success\n", 
+                    TestUtils::ConsoleColor::Green);
+            } 
+            else 
+            {
+                TestUtils::print_colored("Loading weights: Failed\n", 
+                    TestUtils::ConsoleColor::Red);
+            }
             return success;
         } 
         catch (const std::exception& e) 
         {
+            TestUtils::set_console_color(TestUtils::ConsoleColor::Red);
             std::cout << "Loading weights failed with exception: " << e.what() << std::endl;
+            TestUtils::reset_console_color();
             return false;
         }
     });
@@ -58,12 +81,23 @@ TestSuite create_skinner_tests()
 
             const bool success = skinner.load_bind_pose("asset/inverse_bind_pose.json");
             
-            std::cout << "Loading bind pose: " << (success ? "Success" : "Failed") << std::endl;
+            if (success) 
+            {
+                TestUtils::print_colored("Loading bind pose: Success\n", 
+                    TestUtils::ConsoleColor::Green);
+            } 
+            else 
+            {
+                TestUtils::print_colored("Loading bind pose: Failed\n", 
+                    TestUtils::ConsoleColor::Red);
+            }
             return success;
         } 
         catch (const std::exception& e) 
         {
+            TestUtils::set_console_color(TestUtils::ConsoleColor::Red);
             std::cout << "Loading bind pose failed with exception: " << e.what() << std::endl;
+            TestUtils::reset_console_color();
             return false;
         }
     });
@@ -76,12 +110,23 @@ TestSuite create_skinner_tests()
 
             const bool success = skinner.load_new_pose("asset/output_pose.json");
             
-            std::cout << "Loading new pose: " << (success ? "Success" : "Failed") << std::endl;
+            if (success) 
+            {
+                TestUtils::print_colored("Loading new pose: Success\n", 
+                    TestUtils::ConsoleColor::Green);
+            } 
+            else 
+            {
+                TestUtils::print_colored("Loading new pose: Failed\n", 
+                    TestUtils::ConsoleColor::Red);
+            }
             return success;
         } 
         catch (const std::exception& e) 
         {
+            TestUtils::set_console_color(TestUtils::ConsoleColor::Red);
             std::cout << "Loading new pose failed with exception: " << e.what() << std::endl;
+            TestUtils::reset_console_color();
             return false;
         }
     });
@@ -97,19 +142,23 @@ TestSuite create_skinner_tests()
             
             if (success) 
             {
-                std::cout << "Failed to reject nonexistent mesh file\n";
+                TestUtils::print_colored("Failed to reject nonexistent mesh file\n", 
+                    TestUtils::ConsoleColor::Red);
                 return false;
             } 
             else 
             {
-                std::cout << "Correctly rejected nonexistent mesh file\n";
+                TestUtils::print_colored("Correctly rejected nonexistent mesh file\n", 
+                    TestUtils::ConsoleColor::Green);
                 return true;
             }
         } 
         catch (const std::exception& e) 
         {
+            TestUtils::set_console_color(TestUtils::ConsoleColor::Green);
             std::cout << "Correctly rejected nonexistent mesh file with exception: " 
                       << e.what() << std::endl;
+            TestUtils::reset_console_color();
             return true;
         }
     });
@@ -124,28 +173,32 @@ TestSuite create_skinner_tests()
             
             if (success) 
             {
-                std::cout << "Failed to reject nonexistent weights file\n";
+                TestUtils::print_colored("Failed to reject nonexistent weights file\n", 
+                    TestUtils::ConsoleColor::Red);
                 return false;
             } 
             else 
             {
-                std::cout << "Correctly rejected nonexistent weights file\n";
+                TestUtils::print_colored("Correctly rejected nonexistent weights file\n", 
+                    TestUtils::ConsoleColor::Green);
                 return true;
             }
         } 
         catch (const std::exception& e) 
         {
+            TestUtils::set_console_color(TestUtils::ConsoleColor::Green);
             std::cout << "Correctly rejected nonexistent weights file with exception: " 
                       << e.what() << std::endl;
+            TestUtils::reset_console_color();
             return true;
         }
     });
     
     // Full pipeline tests
-
     suite.add_test("Complete Skinning Pipeline", []() 
     {
-        std::cout << "Testing complete skinning pipeline (load, process, save)...\n";
+        TestUtils::print_colored("Testing complete skinning pipeline (load, process, save)...\n", 
+            TestUtils::ConsoleColor::Default);
         
         MeshSkinner skinner;
 
@@ -156,58 +209,94 @@ TestSuite create_skinner_tests()
         try 
         {
             // Step 1: Load all required data
-            std::cout << "Step 1: Loading required data...\n";
+            TestUtils::print_colored("Step 1: Loading required data...\n", 
+                TestUtils::ConsoleColor::Default);
             
             const bool loaded_mesh = skinner.load_mesh("asset/input_mesh.obj");
+            TestUtils::set_console_color(
+                loaded_mesh ? TestUtils::ConsoleColor::Green : TestUtils::ConsoleColor::Red);
             std::cout << "Loaded mesh: " << (loaded_mesh ? "Yes" : "No") << std::endl;
+            TestUtils::reset_console_color();
             success &= loaded_mesh;
             
             const bool loaded_weights = skinner.load_weights("asset/bone_weights.json");
+            TestUtils::set_console_color(
+                loaded_weights ? TestUtils::ConsoleColor::Green : TestUtils::ConsoleColor::Red);
             std::cout << "Loaded weights: " << (loaded_weights ? "Yes" : "No") << std::endl;
+            TestUtils::reset_console_color();
             success &= loaded_weights;
             
             const bool loaded_bind_pose = skinner.load_bind_pose("asset/inverse_bind_pose.json");
+            TestUtils::set_console_color(
+                loaded_bind_pose ? TestUtils::ConsoleColor::Green : TestUtils::ConsoleColor::Red);
             std::cout << "Loaded bind pose: " << (loaded_bind_pose ? "Yes" : "No") << std::endl;
+            TestUtils::reset_console_color();
             success &= loaded_bind_pose;
             
             const bool loaded_new_pose = skinner.load_new_pose("asset/output_pose.json");
+            TestUtils::set_console_color(
+                loaded_new_pose ? TestUtils::ConsoleColor::Green : TestUtils::ConsoleColor::Red);
             std::cout << "Loaded new pose: " << (loaded_new_pose ? "Yes" : "No") << std::endl;
+            TestUtils::reset_console_color();
             success &= loaded_new_pose;
             
             if (!success) 
             {
-                std::cout << "Failed to load all required data\n";
+                TestUtils::print_colored("Failed to load all required data\n", 
+                    TestUtils::ConsoleColor::Red);
                 return false;
+            }
+            else
+            {
+                TestUtils::print_colored("Successfully loaded all required data\n", 
+                    TestUtils::ConsoleColor::Green);
             }
             
             // Step 2: Perform skinning
-            std::cout << "Step 2: Performing skinning operation...\n";
+            TestUtils::print_colored("Step 2: Performing skinning operation...\n", 
+                TestUtils::ConsoleColor::Default);
             const bool skinning_success = skinner.perform_skinning();
-            std::cout << "Skinning completed: " << (skinning_success ? "Yes" : "No") << std::endl;
             
-            if (!skinning_success) 
+            if (skinning_success) 
             {
-                std::cout << "Skinning operation failed\n";
+                TestUtils::print_colored("Skinning completed successfully\n", 
+                    TestUtils::ConsoleColor::Green);
+            } 
+            else 
+            {
+                TestUtils::print_colored("Skinning operation failed\n", 
+                    TestUtils::ConsoleColor::Red);
                 return false;
             }
             
             // Display performance metrics
+            std::cout << "\nPerformance metrics:\n";
             skinner.print_timing_metrics();
             
             // Step 3: Save and validate result
-            std::cout << "Step 3: Saving and validating result...\n";
+            TestUtils::print_colored("Step 3: Saving and validating result...\n", 
+                TestUtils::ConsoleColor::Default);
             const bool save_success = skinner.save_skinned_mesh(temp_output_path);
-            std::cout << "Save operation: " << (save_success ? "Success" : "Failed") << std::endl;
             
-            if (!save_success) 
+            if (save_success) 
             {
-                std::cout << "Failed to save skinned mesh\n";
+                TestUtils::print_colored("Save operation: Success\n", 
+                    TestUtils::ConsoleColor::Green);
+            } 
+            else 
+            {
+                TestUtils::print_colored("Save operation: Failed\n", 
+                    TestUtils::ConsoleColor::Red);
                 return false;
             }
             
             // Verify file exists and has valid content
             const bool file_exists = std::filesystem::exists(temp_output_path);
+            
+            TestUtils::set_console_color(
+                file_exists ? TestUtils::ConsoleColor::Green : TestUtils::ConsoleColor::Red);
             std::cout << "Output file exists: " << (file_exists ? "Yes" : "No") << std::endl;
+            TestUtils::reset_console_color();
             
             if (file_exists) 
             {
@@ -216,17 +305,34 @@ TestSuite create_skinner_tests()
                 {
                     const Mesh saved_mesh = ObjFacade::load_obj_mesh(temp_output_path);
 
+                    TestUtils::set_console_color(TestUtils::ConsoleColor::Green);
                     std::cout << "Saved mesh contains " << saved_mesh.vertices.size() 
                               << " vertices and " << saved_mesh.faces.size() << " faces" << std::endl;
+                    TestUtils::reset_console_color();
                     
                     // Clean up
                     std::filesystem::remove(temp_output_path);
 
-                    return !saved_mesh.vertices.empty() && !saved_mesh.faces.empty();
+                    const bool valid_mesh = !saved_mesh.vertices.empty() && !saved_mesh.faces.empty();
+                    
+                    if (valid_mesh) 
+                    {
+                        TestUtils::print_colored("Complete skinning pipeline test passed!\n", 
+                            TestUtils::ConsoleColor::Green);
+                    } 
+                    else 
+                    {
+                        TestUtils::print_colored("Saved mesh validation failed - empty mesh\n", 
+                            TestUtils::ConsoleColor::Red);
+                    }
+
+                    return valid_mesh;
                 } 
                 catch (const std::exception& e) 
                 {
+                    TestUtils::set_console_color(TestUtils::ConsoleColor::Red);
                     std::cout << "Failed to validate saved mesh: " << e.what() << std::endl;
+                    TestUtils::reset_console_color();
                     
                     // Clean up even if validation fails
                     std::filesystem::remove(temp_output_path);
@@ -239,7 +345,9 @@ TestSuite create_skinner_tests()
         } 
         catch (const std::exception& e) 
         {
+            TestUtils::set_console_color(TestUtils::ConsoleColor::Red);
             std::cout << "Pipeline test failed with exception: " << e.what() << std::endl;
+            TestUtils::reset_console_color();
             
             // Clean up in case file was created before exception
             if (std::filesystem::exists(temp_output_path)) 

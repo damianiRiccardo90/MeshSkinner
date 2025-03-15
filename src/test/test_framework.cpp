@@ -28,7 +28,9 @@ bool TestSuite::run()
     {
         std::cout << "Test: " << std::left << std::setw(40) << test.name;
         bool result = test.test_function();
-        std::cout << (result ? " [PASSED]" : " [FAILED]") << std::endl;
+        std::cout << "=====" 
+                  << (result ? " [PASSED] " : " [FAILED] ") 
+                  << "=====\n";
         if (result) passed++;
     }
     
