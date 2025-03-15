@@ -2,15 +2,12 @@
 
 // Standard library imports
 #include <cmath>
-#include <vector>
-
-// Third-party imports
-#include "handmade_math/handmade_math.h"
 
 // Local application imports
 #include "model/mesh.h"
 
 
+namespace TestUtils {
 bool approx_equal(float a, float b, float epsilon/*= .0001f*/) 
 {
     return std::fabs(a - b) < epsilon;
@@ -78,3 +75,5 @@ std::pair<HMM_Vec3, HMM_Vec3> calculate_mesh_bounds(const std::vector<HMM_Vec3>&
     
     return {min_bounds, max_bounds};
 }
+
+} // namespace TestUtils

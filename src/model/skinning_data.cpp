@@ -3,9 +3,6 @@
 // Standard library imports
 #include <stdexcept>
 
-// Third-party imports
-#include "handmade_math/handmade_math.h"
-
 // Local application imports
 #include "facade/json_facade.h"
 

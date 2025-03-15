@@ -1,3 +1,5 @@
+#define TINYOBJLOADER_IMPLEMENTATION
+
 #include "obj_facade.h"
 
 // Standard library imports
@@ -9,7 +11,7 @@
 #include "tiny_obj_loader/tiny_obj_loader.h"
 
 // Local application imports
-#include "model/Mesh.h"
+#include "model/mesh.h"
 
 
 Mesh ObjFacade::load_obj_mesh(const std::string& filePath)

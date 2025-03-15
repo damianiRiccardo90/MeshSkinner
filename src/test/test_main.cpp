@@ -33,6 +33,10 @@ int main()
     std::cout << "\n===== Test Summary =====\n";
     std::cout << (test_suites.size() - failed_suites) << "/" << test_suites.size() 
               << " test suites passed.\n";
-              
+
+    // Wait for input so the console doesn't close immediately
+    std::cout << "Press Enter to exit...";
+    std::cin.get();
+
     return failed_suites == 0 ? 0 : 1;
 }

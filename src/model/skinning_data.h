@@ -3,9 +3,11 @@
 // Standard library imports
 #include <vector>
 
+// Third-party imports
+#include "handmade_math/handmade_math.h"
+
 
 class Json;
-typedef union HMM_Mat4;
 
 /**
  * @brief Represents the influence of a single joint on a vertex

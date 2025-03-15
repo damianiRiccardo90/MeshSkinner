@@ -1,8 +1,14 @@
 #pragma once
 
+// Standard library imports
+#include <vector>
+#include <utility>
+
+// Third-party imports
+#include "handmade_math/handmade_math.h"
+
 
 struct Face;
-typedef union HMM_Vec3;
 
 namespace TestUtils {
 

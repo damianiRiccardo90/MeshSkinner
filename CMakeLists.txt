@@ -1,45 +1,42 @@
 cmake_minimum_required(VERSION 3.10)
-project(MeshSkinner)
+project(MeshSkinner VERSION 0.1.0 LANGUAGES CXX)
 
-# Include third-party libraries
-include_directories(third_party/handmade_math)
-include_directories(third_party/indicators)
-include_directories(third_party/nlohmann)
-include_directories(third_party/tiny_obj_loader)
+# Set C++ standard to 17 (as I'm using std::filesystem)
+set(CMAKE_CXX_STANDARD 17)
 
-# Create a library of the core functionality for both main app and tests
+# Include project's source and third-party libraries
+include_directories(
+    ${PROJECT_SOURCE_DIR}/third_party
+    ${PROJECT_SOURCE_DIR}/src
+)
+
+# Create libraries for both main app and tests
 
 add_library(MeshSkinnerLib STATIC
     src/facade/json_facade.cpp
-    src/facade/json_facade.h
     src/facade/math_facade.cpp
-    src/facade/math_facade.h
     src/facade/obj_facade.cpp
-    src/facade/obj_facade.h
-    src/model/mesh.h
     src/model/skeleton.cpp
-    src/model/skeleton.h
-    src/model/skinning_data.h
+    src/model/skinning_data.cpp
     src/mesh_skinner.cpp
-    src/mesh_skinner.h
-    # Add any other source files that should be shared with tests
 )
 
 add_library(MeshSkinnerTestsLib STATIC
     src/test/test_framework.cpp
-    src/test/test_framework.h
     src/test/test_mesh.cpp
     src/test/test_skeleton.cpp
     src/test/test_skinner.cpp
     src/test/test_skinning_data.cpp
     src/test/test_utils.cpp
-    src/test/test_utils.h
 )
 
 # Add main executable
 add_executable(MeshSkinner src/main.cpp)
-target_link_libraries(MeshSkinner MeshSkinnerLib)
+target_link_libraries(MeshSkinner PRIVATE MeshSkinnerLib)
 
 # Add test executable
 add_executable(MeshSkinnerTests src/test/test_main.cpp)
-target_link_libraries(MeshSkinnerTests MeshSkinnerLib MeshSkinnerTestsLib)
+target_link_libraries(MeshSkinnerTests PRIVATE 
+    MeshSkinnerTestsLib
+    MeshSkinnerLib
+)

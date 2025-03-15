@@ -4,9 +4,11 @@
 #include <string>
 #include <vector>
 
+// Third-party imports
+#include "handmade_math/handmade_math.h"
+
 
 struct Json;
-typedef union HMM_Mat4;
 
 /**
  * @brief Struct representing a joint in a skeleton hierarchy

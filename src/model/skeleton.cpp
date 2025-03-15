@@ -1,7 +1,4 @@
-#include "Skeleton.h"
-
-// Third-party imports
-#include "handmade_math/handmade_math.h"
+#include "skeleton.h"
 
 // Local application imports
 #include "facade/json_facade.h"

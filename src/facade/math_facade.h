@@ -1,8 +1,8 @@
 #pragma once
 
+// Third-party imports
+#include "handmade_math/handmade_math.h"
 
-typedef union HMM_Mat4;
-typedef union HMM_Vec3;
 
 /**
  * @brief A Facade class to simplify interactions with the HandmadeMath library.

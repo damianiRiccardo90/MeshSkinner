@@ -1,8 +1,6 @@
-#include "math_facade.h"
-
-// Third-party imports
 #define HANDMADE_MATH_IMPLEMENTATION
-#include "handmade_math/handmade_math.h"
+
+#include "math_facade.h"
 
 
 HMM_Mat4 MathFacade::create_identity()
