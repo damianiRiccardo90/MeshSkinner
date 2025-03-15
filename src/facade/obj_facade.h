@@ -12,7 +12,7 @@ class Mesh;
  *
  * This class encapsulates the complexity of working with tinyobjloader, providing
  * a clean interface for loading and saving 3D mesh data in OBJ format. It handles
- * the parsing of vertex data, indices, and proper error handling during file operations.
+ * the parsing of vertex data, indices, faces,and proper error handling during file operations.
  */
 class ObjFacade 
 {
@@ -26,8 +26,8 @@ public:
      *
      * This method abstracts all the complexity of working with tinyobjloader,
      * converting the library's internal representation into our own Mesh structure.
-     * It handles vertex positions and triangle indices, with appropriate warnings
-     * displayed for non-critical issues.
+     * It handles vertex positions and triangle indices, and face data,with appropriate 
+     * warnings displayed for non-critical issues.
      */
     static Mesh load_obj_mesh(const std::string& filePath);
 
@@ -38,8 +38,10 @@ public:
      * @return true if the file was saved successfully; otherwise false.
      *
      * Converts the internal Mesh representation to the OBJ file format,
-     * writing vertex positions and face indices. OBJ indices are automatically
+     * writing vertex positions and face definitions. OBJ indices are automatically
      * adjusted from 0-based (internal) to 1-based (OBJ standard) during export.
+     * The method can use either the faces collection or the raw indices array,
+     * preferring faces if available.
      */
     static bool save_obj_mesh(const std::string& filePath, const Mesh& mesh);
 };

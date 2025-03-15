@@ -38,9 +38,6 @@ int main(int argc, char* argv[])
     // Save the result
     if (!skinner.save_skinned_mesh(argv[4])) return 1;
     
-    // Print timing metrics
-    skinner.print_timing_metrics();
-    
     // Wait for input so the console doesn't close immediately
     std::cout << "Press Enter to exit...";
     std::cin.get();

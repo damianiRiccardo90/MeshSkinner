@@ -28,10 +28,10 @@ add_library(MeshSkinnerLib STATIC
 add_library(MeshSkinnerTestsLib STATIC
     src/test/test_framework.cpp
     src/test/test_framework.h
-    src/test/test_mesh_loading.cpp
+    src/test/test_mesh.cpp
     src/test/test_skeleton.cpp
+    src/test/test_skinner.cpp
     src/test/test_skinning_data.cpp
-    src/test/test_skinning_operations.cpp
     src/test/test_utils.cpp
     src/test/test_utils.h
 )

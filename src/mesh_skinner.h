@@ -23,8 +23,8 @@ class MeshSkinner
 public:
         
     /**
-     * @brief Loads mesh data from a JSON file.
-     * @param mesh_path The path to the mesh JSON file.
+     * @brief Loads mesh data from an OBJ file via ObjFacade.
+     * @param mesh_path The path to the OBJ file.
      * @return true if the mesh was loaded successfully; otherwise false.
      */
     bool load_mesh(const std::string& mesh_path);
@@ -57,17 +57,11 @@ public:
     bool perform_skinning();
     
     /**
-     * @brief Saves the skinned mesh to a JSON file.
-     * @param output_path The path where the skinned mesh will be saved.
+     * @brief Saves the skinned mesh to an OBJ file via ObjFacade.
+     * @param output_path The path where the OBJ file will be saved.
      * @return true if the mesh was saved successfully; otherwise false.
      */
     bool save_skinned_mesh(const std::string& output_path);
-    
-    /**
-     * @brief Gets the resulting skinned mesh.
-     * @return A const reference to the skinned mesh.
-     */
-    const Mesh& get_skinned_mesh() const;
 
     /**
      * @brief Prints all collected performance timing metrics to the console.

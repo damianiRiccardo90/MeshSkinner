@@ -12,50 +12,29 @@
 // Local application imports
 #include "facade/json_facade.h"
 #include "facade/math_facade.h"
+#include "facade/obj_facade.h"
 #include "model/mesh.h"
 #include "model/skeleton.h"
 #include "model/skinning_data.h"
 
 
+// Threshold below which joint weights are considered negligible.
 const float MeshSkinner::WEIGHT_THRESHOLD = .0001f;
 
 bool MeshSkinner::load_mesh(const std::string& mesh_path)
 {
-    try 
+    try
     {
-        const Json json_data = JsonFacade::load_from_file(mesh_path);
-        
-        // Clear existing mesh data
-        original_mesh.vertices.clear();
-        original_mesh.indices.clear();
-        
-        // Parse vertices
-        const Json vertices_json = json_data["vertices"];
-        for (size_t i = 0; i < vertices_json.size(); i++) 
-        {
-            const Json vertex = vertices_json.at(i);
-            const Vertex v{
-                vertex.at(0).as_float(),
-                vertex.at(1).as_float(),
-                vertex.at(2).as_float()
-            };
-            original_mesh.vertices.push_back(v);
-        }
-        
-        // Parse indices
-        const Json indices_json = json_data["indices"];
-        for (size_t i = 0; i < indices_json.size(); i++) 
-        {
-            original_mesh.indices.push_back(indices_json.at(i).as_int());
-        }
-        
-        // Initialize the skinned mesh as a copy of the original
+        // Load JSON from file
+        original_mesh = ObjFacade::load_obj_mesh(mesh_path);
+
         skinned_mesh = original_mesh;
-        
-        std::cout << "Loaded mesh with " << original_mesh.vertices.size() << " vertices" << std::endl;
+
+        std::cout << "Loaded mesh with " << original_mesh.vertices.size() 
+                  << " vertices from OBJ.\n";
         return true;
-    } 
-    catch (const std::exception& e) 
+    }
+    catch (const std::exception& e)
     {
         std::cerr << "Failed to load mesh: " << e.what() << std::endl;
         return false;
@@ -66,31 +45,14 @@ bool MeshSkinner::load_weights(const std::string& weights_path)
 {
     try 
     {
+        // Load JSON from file
         const Json json_data = JsonFacade::load_from_file(weights_path);
-        
-        // Clear existing weights
-        skin_data.weights.clear();
-        
-        // Parse weights for each vertex
-        const Json vertices_weights = json_data["vertex_weights"];
-        for (size_t i = 0; i < vertices_weights.size(); i++) 
-        {
-            std::vector<JointInfluence> influences;
-            const Json vertex_influences = vertices_weights.at(i);
-            
-            for (size_t j = 0; j < vertex_influences.size(); j++) 
-            {
-                const Json influence = vertex_influences.at(j);
-                JointInfluence joint_influence;
-                joint_influence.joint_id = influence["joint_id"].as_int();
-                joint_influence.weight = influence["weight"].as_float();
-                influences.push_back(joint_influence);
-            }
-            
-            skin_data.weights.push_back(influences);
-        }
-        
-        std::cout << "Loaded skinning weights for " << skin_data.weights.size() << " vertices" << std::endl;
+
+        // Parse out the weights
+        skin_data.weights = SkinningData::from_json(json_data);
+
+        std::cout << "Loaded skinning weights for " << skin_data.weights.size()
+                  << " vertices.\n";
         return true;
     } 
     catch (const std::exception& e) 
@@ -102,40 +64,18 @@ bool MeshSkinner::load_weights(const std::string& weights_path)
 
 bool MeshSkinner::load_bind_pose(const std::string& bind_pose_path)
 {
-    try 
+    try
     {
+        // Load JSON from file
         const Json json_data = JsonFacade::load_from_file(bind_pose_path);
-        
-        // Clear existing skeleton
-        bind_pose.joints.clear();
-        
-        // Parse joints
-        const Json joints_json = json_data["joints"];
-        for (size_t i = 0; i < joints_json.size(); i++) 
-        {
-            const Json joint = joints_json.at(i);
-            
-            Joint j;
-            j.name = joint["name"].as_string();
-            j.parent_id = joint["parent_id"].as_int();
-            
-            // Parse local transform
-            const Json transform = joint["local_transform"];
-            for (int row = 0; row < 4; row++) 
-            {
-                for (int col = 0; col < 4; col++) 
-                {
-                    j.local_transform[row][col] = transform.at(row * 4 + col).as_float();
-                }
-            }
-            
-            bind_pose.joints.push_back(j);
-        }
-        
-        std::cout << "Loaded bind pose with " << bind_pose.joints.size() << " joints" << std::endl;
+
+        // Parse it into the bind pose Skeleton
+        bind_pose = Skeleton::from_json(json_data);
+
+        std::cout << "Loaded bind pose with " << bind_pose.joints.size() << " joints.\n";
         return true;
-    } 
-    catch (const std::exception& e) 
+    }
+    catch (const std::exception& e)
     {
         std::cerr << "Failed to load bind pose: " << e.what() << std::endl;
         return false;
@@ -144,40 +84,18 @@ bool MeshSkinner::load_bind_pose(const std::string& bind_pose_path)
 
 bool MeshSkinner::load_new_pose(const std::string& new_pose_path)
 {
-    try 
+    try
     {
+        // Load JSON from file
         const Json json_data = JsonFacade::load_from_file(new_pose_path);
         
-        // Clear existing skeleton
-        new_pose.joints.clear();
-        
-        // Parse joints
-        const Json joints_json = json_data["joints"];
-        for (size_t i = 0; i < joints_json.size(); i++) 
-        {
-            const Json joint = joints_json.at(i);
-            
-            Joint j;
-            j.name = joint["name"].as_string();
-            j.parent_id = joint["parent_id"].as_int();
-            
-            // Parse local transform
-            const Json transform = joint["local_transform"];
-            for (int row = 0; row < 4; row++) 
-            {
-                for (int col = 0; col < 4; col++) 
-                {
-                    j.local_transform[row][col] = transform.at(row * 4 + col).as_float();
-                }
-            }
-            
-            new_pose.joints.push_back(j);
-        }
-        
-        std::cout << "Loaded new pose with " << new_pose.joints.size() << " joints" << std::endl;
+        // Parse it into the new pose Skeleton
+        new_pose = Skeleton::from_json(json_data);
+
+        std::cout << "Loaded new pose with " << new_pose.joints.size() << " joints.\n";
         return true;
-    } 
-    catch (const std::exception& e) 
+    }
+    catch (const std::exception& e)
     {
         std::cerr << "Failed to load new pose: " << e.what() << std::endl;
         return false;
@@ -245,47 +163,21 @@ bool MeshSkinner::perform_skinning()
 
 bool MeshSkinner::save_skinned_mesh(const std::string& output_path)
 {
-    try 
+    try
     {
-        // Create JSON structure for the skinned mesh
-        Json json_data = Json::make_object();
-        
-        // Add vertices
-        Json vertices_json = Json::make_array();
-        for (const auto& vertex : skinned_mesh.vertices) 
+        if (!ObjFacade::save_obj_mesh(output_path, skinned_mesh))
         {
-            Json vertex_json = Json::make_array();
-            vertex_json.push_back(vertex.x);
-            vertex_json.push_back(vertex.y);
-            vertex_json.push_back(vertex.z);
-            vertices_json.push_back(vertex_json);
+            std::cerr << "Failed to save skinned mesh to OBJ.\n";
+            return false;
         }
-        json_data.set("vertices", vertices_json);
-        
-        // Add indices
-        Json indices_json = Json::make_array();
-        for (const auto& index : skinned_mesh.indices)
-        {
-            indices_json.push_back(index);
-        }
-        json_data.set("indices", indices_json);
-        
-        // Write to file using the facade
-        JsonFacade::save_to_file(output_path, json_data, true);
-        
         std::cout << "Saved skinned mesh to: " << output_path << std::endl;
         return true;
-    } 
-    catch (const std::exception& e) 
+    }
+    catch (const std::exception& e)
     {
         std::cerr << "Failed to save skinned mesh: " << e.what() << std::endl;
         return false;
     }
-}
-
-const Mesh &MeshSkinner::get_skinned_mesh() const
-{
-    return skinned_mesh;
 }
 
 void MeshSkinner::print_timing_metrics() const

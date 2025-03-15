@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 
-// Third-party imports
-#include "handmade_math/handmade_math.h"
 
+struct Json;
+typedef union HMM_Mat4;
 
 /**
  * @brief Struct representing a joint in a skeleton hierarchy
@@ -47,7 +47,15 @@ struct Joint
  * to one or more bones with different weights.
  */
 struct Skeleton 
-{    
+{
+    /**
+     * @brief Construct a Skeleton structure by parsing a JSON object.
+     * @param json_obj The JSON data containing the skeleton definition.
+     * @return A Skeleton object parsed from the JSON.
+     * @throws std::runtime_error if parsing fails or fields are missing/invalid.
+     */
+    static Skeleton from_json(const Json& json_obj);
+
     /**
      * @brief Calculate global transforms for all joints from their local transforms
      *

@@ -1,6 +1,7 @@
 #pragma once
 
 // Standard library imports
+#include <array>
 #include <vector>
 
 
@@ -29,12 +30,27 @@ struct Vertex
 };
 
 /**
- * @brief A representation of a 3D mesh with vertices and triangle indices.
+ * @brief A struct representing a triangular face in a mesh.
+ *
+ * This struct stores the three vertex indices that make up a triangular face.
+ * Each index references a position in the vertices array of the mesh.
+ */
+struct Face
+{
+    /**
+     * @brief The indices of the three vertices that form this triangular face.
+     * 
+     * Each value references a position in the vertices array of the mesh.
+     */
+    std::array<unsigned int, 3> indices;
+};
+
+/**
+ * @brief A representation of a 3D mesh with vertices and faces.
  *
  * This struct contains the fundamental data needed to represent a 3D mesh:
- * a collection of vertices and indices that define how these vertices are 
- * connected to form triangles. The indices are stored as triplets, where
- * each consecutive set of three indices defines one triangle face.
+ * a collection of vertices and faces that define how these vertices are 
+ * connected to form triangles.
  */
 struct Mesh 
 {
@@ -50,4 +66,13 @@ struct Mesh
      * The values reference positions in the vertices array.
      */
     std::vector<unsigned int> indices;
+    
+    /**
+     * @brief The collection of triangular faces that make up the mesh.
+     * 
+     * Each face defines a triangle by referencing three vertices in the vertices array.
+     * This provides a more structured representation of the mesh topology compared to
+     * the raw indices array.
+     */
+    std::vector<Face> faces;
 };

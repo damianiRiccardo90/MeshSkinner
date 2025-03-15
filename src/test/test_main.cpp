@@ -7,17 +7,18 @@
 
 
 // Forward declarations for test suite creators
-TestSuite create_mesh_loading_tests();
+TestSuite create_mesh_tests();
 TestSuite create_skeleton_tests();
 TestSuite create_skinning_data_tests();
-TestSuite create_skinning_operations_tests();
+TestSuite create_skinner_tests();
 
-int main() {
+int main() 
+{
     std::vector<TestSuite> test_suites = {
-        create_mesh_loading_tests(),
-        create_skinning_data_tests(),
+        create_mesh_tests(),
         create_skeleton_tests(),
-        create_skinning_operations_tests()
+        create_skinning_data_tests(),
+        create_skinner_tests()
     };
     
     int failed_suites = 0;

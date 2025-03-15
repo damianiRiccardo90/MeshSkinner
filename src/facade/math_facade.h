@@ -84,7 +84,7 @@ public:
     static HMM_Mat4 scale(float x, float y, float z);
 
     /**
-     * @brief Translates a matrix by the given vector.
+     * @brief Creates a translation matrix for the given x, y, z coordinates
      * @param x Amount to translate along the x-axis.
      * @param y Amount to translate along the y-axis.
      * @param z Amount to translate along the z-axis.

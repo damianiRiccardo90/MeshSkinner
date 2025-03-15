@@ -3,9 +3,9 @@
 // Standard library imports
 #include <vector>
 
-// Third-party imports
-#include "handmade_math/handmade_math.h"
 
+class Json;
+typedef union HMM_Mat4;
 
 /**
  * @brief Represents the influence of a single joint on a vertex
@@ -42,6 +42,14 @@ struct JointInfluence
  */
 struct SkinningData 
 {
+    /**
+     * @brief Parses skinning data (weights) from a Json object.
+     * @param json_obj The source Json containing "vertex_weights".
+     * @return A nested vector of JointInfluence for each vertex.
+     * @throws std::runtime_error if "vertex_weights" or fields are missing/invalid.
+     */
+    static std::vector<std::vector<JointInfluence>> from_json(const Json& json_obj);
+
     /**
      * @brief Weights for each vertex 
      *

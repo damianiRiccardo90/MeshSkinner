@@ -6,17 +6,17 @@
 
 
 Json::Json() 
-    : impl(std::make_unique<JsonAlias>()) 
+    : impl(std::make_unique<nlohmann::json>()) 
 {}
 
 Json::Json(const Json& other) 
-    : impl(std::make_unique<JsonAlias>(*other.impl)) 
+    : impl(std::make_unique<nlohmann::json>(*other.impl)) 
 {}
 
 Json::~Json() = default;
 
-Json::Json(const JsonAlias& json) 
-    : impl(std::make_unique<JsonAlias>(json)) 
+Json::Json(const nlohmann::json& json) 
+    : impl(std::make_unique<nlohmann::json>(json)) 
 {}
 
 bool Json::contains(const std::string& key) const 
@@ -52,7 +52,7 @@ bool Json::as_bool() const
 Json Json::make_object() 
 {
     Json result;
-    *result.impl = JsonAlias::object();
+    *result.impl = nlohmann::json::object();
     return result;
 }
 
@@ -84,7 +84,7 @@ void Json::set(const std::string& key, const Json& value)
 Json Json::make_array() 
 {
     Json result;
-    *result.impl = JsonAlias::array();
+    *result.impl = nlohmann::json::array();
     return result;
 }
 
@@ -134,7 +134,7 @@ Json JsonFacade::load_from_file(const std::string& filepath)
     
     try 
     {
-        const JsonAlias json_data = JsonAlias::parse(file);
+        const nlohmann::json json_data = nlohmann::json::parse(file);
         return Json(json_data);
     } 
     catch (const std::exception& e) 
@@ -184,7 +184,7 @@ Json JsonFacade::parse(const std::string& json_string)
 {
     try 
     {
-        const JsonAlias parsed = JsonAlias::parse(json_string);
+        const nlohmann::json parsed = nlohmann::json::parse(json_string);
         return Json(parsed);
     } 
     catch (const std::exception& e) 

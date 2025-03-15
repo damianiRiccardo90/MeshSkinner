@@ -7,10 +7,6 @@
 // Third-party imports
 #include "nlohmann/json.h"
 
-// Instead of referring to nlohmann::json (which is ambiguous),
-// we define a clean alias to the intended version. This avoids having
-// to spread version-specific namespace details everywhere.
-using JsonAlias = nlohmann::json_abi_v3_11_3::json;
 
 /**
  * @brief A lightweight wrapper around JSON data that exposes only what we need.
@@ -203,13 +199,13 @@ public:
 private:
 
     // The actual implementation, hidden from clients
-    std::unique_ptr<JsonAlias> impl;
+    std::unique_ptr<nlohmann::json> impl;
     
     /**
      * @brief Constructor from the alias type (for internal use).
-     * @param json The underlying JsonAlias instance.
+     * @param json The underlying nlohmann::json instance.
      */
-    explicit Json(const JsonAlias& json);
+    explicit Json(const nlohmann::json& json);
     
     // Give JsonFacade direct access to impl if needed
     friend class JsonFacade;

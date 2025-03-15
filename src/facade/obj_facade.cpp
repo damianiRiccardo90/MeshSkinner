@@ -57,7 +57,7 @@ Mesh ObjFacade::load_obj_mesh(const std::string& filePath)
     }
     
     // Process indices from all shapes
-    // Collect unique vertices and build index array
+    // Collect unique vertices and build index array and faces
     for (const auto& shape : shapes) 
     {
         // For each face
@@ -66,12 +66,33 @@ Mesh ObjFacade::load_obj_mesh(const std::string& filePath)
         {
             int fv = shape.mesh.num_face_vertices[f];
             
+            // Skip non-triangular faces (although the loader should triangulate everything)
+            if (fv != 3) 
+            {
+                std::cerr << "Warning: Found non-triangular face with " << fv << " vertices" << std::endl;
+                index_offset += fv;
+                continue;
+            }
+            
+            // Create a new face
+            Face face;
+            
             // For each vertex in the face (should be 3 after triangulation)
-            for (size_t v = 0; v < fv; v++) 
+            for (size_t v = 0; v < 3; v++) 
             {
                 tinyobj::index_t idx = shape.mesh.indices[index_offset + v];
-                mesh.indices.push_back(static_cast<unsigned int>(idx.vertex_index));
+                unsigned int vertexIndex = static_cast<unsigned int>(idx.vertex_index);
+                
+                // Add to linear indices array
+                mesh.indices.push_back(vertexIndex);
+                
+                // Store in face structure
+                face.indices[v] = vertexIndex;
             }
+            
+            // Add the completed face to the mesh
+            mesh.faces.push_back(face);
+            
             index_offset += fv;
         }
     }
@@ -91,7 +112,16 @@ bool ObjFacade::save_obj_mesh(const std::string& filePath, const Mesh& mesh)
     // Write OBJ file header with some metadata
     ofs << "# OBJ file created by MeshSkinner\n";
     ofs << "# Vertices: " << mesh.vertices.size() << "\n";
-    ofs << "# Faces: " << mesh.indices.size() / 3 << "\n\n";
+    
+    // Use the face count if available, otherwise calculate from indices
+    if (!mesh.faces.empty())
+    {
+        ofs << "# Faces: " << mesh.faces.size() << "\n\n";
+    }
+    else
+    {
+        ofs << "# Faces: " << mesh.indices.size() / 3 << "\n\n";
+    }
 
     // Write vertex positions
     for (const auto& vert : mesh.vertices) 
@@ -104,13 +134,28 @@ bool ObjFacade::save_obj_mesh(const std::string& filePath, const Mesh& mesh)
 
     // Write face indices
     // OBJ indices are 1-based, so we add 1 to each index
-    // Each face is a triangle (3 indices)
-    for (size_t i = 0; i < mesh.indices.size(); i += 3) 
+    if (!mesh.faces.empty())
     {
-        ofs << "f "
-            << (mesh.indices[i]     + 1) << " "
-            << (mesh.indices[i + 1] + 1) << " "
-            << (mesh.indices[i + 2] + 1) << "\n";
+        // Use the structured faces collection if available
+        for (const auto& face : mesh.faces)
+        {
+            ofs << "f "
+                << (face.indices[0] + 1) << " "
+                << (face.indices[1] + 1) << " "
+                << (face.indices[2] + 1) << "\n";
+        }
+    }
+    else
+    {
+        // Fall back to the raw indices array (backward compatibility)
+        // Each face is a triangle (3 indices)
+        for (size_t i = 0; i < mesh.indices.size(); i += 3) 
+        {
+            ofs << "f "
+                << (mesh.indices[i]     + 1) << " "
+                << (mesh.indices[i + 1] + 1) << " "
+                << (mesh.indices[i + 2] + 1) << "\n";
+        }
     }
 
     ofs.close();
