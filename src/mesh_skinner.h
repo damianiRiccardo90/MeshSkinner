@@ -4,6 +4,10 @@
 #include <chrono>
 #include <string>
 #include <unordered_map>
+#include <vector>
+
+// Third-party imports
+#include "handmade_math/handmade_math.h"
 
 // Local application imports
 #include "model/mesh.h"
@@ -69,9 +73,11 @@ public:
 protected:
 
     /**
-     * @brief Applies the skinning matrices to deform the vertices.
+     * @brief Applies precomputed transformations to each vertex to produce the skinned mesh.
+     *
+     * @param precomputed_matrices A vector of precomputed skinning matrices for each joint.
      */
-    void apply_vertex_transformations();
+    void apply_vertex_transformations(const std::vector<HMM_Mat4>& precomputed_matrices);
 
     /**
      * @brief Records the execution time of an operation.

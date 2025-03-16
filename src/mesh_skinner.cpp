@@ -3,8 +3,6 @@
 // Standard library imports
 #include <iomanip>
 #include <iostream>
-#include <string>
-#include <vector>
 
 // Third-party imports
 #include "indicators/indicators.h"
@@ -13,8 +11,6 @@
 #include "facade/json_facade.h"
 #include "facade/math_facade.h"
 #include "facade/obj_facade.h"
-#include "model/mesh.h"
-#include "model/skinning_data.h"
 
 
 // Threshold below which joint weights are considered negligible.
@@ -108,19 +104,19 @@ bool MeshSkinner::perform_skinning()
     // Verify all required data is loaded
     if (original_mesh.vertices.empty()) 
     {
-        std::cerr << "No mesh loaded" << std::endl;
+        std::cerr << "No mesh loaded\n";
         return false;
     }
     
     if (skin_data.weights.empty()) 
     {
-        std::cerr << "No skinning weights loaded" << std::endl;
+        std::cerr << "No skinning weights loaded\n";
         return false;
     }
     
     if (skin_data.inverse_bind_matrices.empty() || skin_data.pose_matrices.empty()) 
     {
-        std::cerr << "Inverse bind matrices or pose matrices not loaded" << std::endl;
+        std::cerr << "Inverse bind matrices or pose matrices not loaded\n";
         return false;
     }
 
@@ -129,19 +125,32 @@ bool MeshSkinner::perform_skinning()
     {
         std::cerr << "Weight data count (" << skin_data.weights.size() 
                   << ") doesn't match vertex count (" 
-                  << original_mesh.vertices.size() << ")" << std::endl;
+                  << original_mesh.vertices.size() << ")\n";
         return false;
     }
 
-    // Apply vertex transformations with timing
+    // Precompute skinning matrices for each joint
+    const size_t joint_count = skin_data.pose_matrices.size();
+    std::vector<HMM_Mat4> precomputed_matrices(joint_count);
+
+    for (size_t joint_id = 0; joint_id < joint_count; joint_id++)
+    {
+        // Combine pose and inverse bind into a single matrix
+        precomputed_matrices[joint_id] = MathFacade::multiply(
+            skin_data.pose_matrices[joint_id],
+            skin_data.inverse_bind_matrices[joint_id]
+        );
+    }
+
+    // Apply transformations using the precomputed matrices (with timing)
     const auto apply_start = std::chrono::high_resolution_clock::now();
-    apply_vertex_transformations();
+    apply_vertex_transformations(precomputed_matrices);
     const auto apply_end = std::chrono::high_resolution_clock::now();
 
     const std::chrono::duration<double, std::milli> apply_duration = apply_end - apply_start;
     record_timing("Apply Transformations", apply_duration.count());
-    
-    std::cout << "Skinning completed successfully" << std::endl;
+
+    std::cout << "Skinning completed successfully\n";
     return true;
 }
 
@@ -186,7 +195,7 @@ void MeshSkinner::print_timing_metrics() const
     std::cout << std::string(50, '-') << std::endl;
 }
 
-void MeshSkinner::apply_vertex_transformations()
+void MeshSkinner::apply_vertex_transformations(const std::vector<HMM_Mat4>& precomputed_matrices)
 {
     // Reset skinned mesh to have the same vertices as original
     skinned_mesh.vertices = original_mesh.vertices;
@@ -203,50 +212,51 @@ void MeshSkinner::apply_vertex_transformations()
         indicators::option::ShowPercentage{true},
         indicators::option::PrefixText{"Applying skinning"}
     };
-    
+
     // Apply linear blend skinning to each vertex
-    for (size_t i = 0; i < total_vertices; i++) 
+    for (size_t i = 0; i < total_vertices; i++)
     {
         const HMM_Vec3 original_position = HMM_V3(
             original_mesh.vertices[i].x,
             original_mesh.vertices[i].y,
             original_mesh.vertices[i].z
         );
-        
+
         HMM_Vec3 new_position = HMM_V3(0.f, 0.f, 0.f);
-        
+
         // Get the bone influences for this vertex
         const VertexWeights& vertex_weights = skin_data.weights[i];
-        
+
         // Blend transformations based on weights
-        for (size_t j = 0; j < VertexWeights::MAX_INFLUENCES; j++) 
+        for (size_t j = 0; j < VertexWeights::MAX_INFLUENCES; j++)
         {
             const int joint_id = vertex_weights.joint_ids[j];
             const float weight = vertex_weights.weights[j];
-            
+
             // Skip influences with negligible weights or invalid joint IDs
-            if (weight < WEIGHT_THRESHOLD || joint_id < 0) 
-                continue;
-            
-            try {
-                // Get skinning matrix directly when needed (no pre-calculation)
-                const HMM_Mat4 skinning_matrix = skin_data.get_skinning_matrix(joint_id);
-                
-                // Transform position by the skinning matrix
-                const HMM_Vec3 transformed_position = MathFacade::transform_vec3(
-                    skinning_matrix, original_position);
-                
-                // Add weighted contribution to the final position
+            if (weight < WEIGHT_THRESHOLD || joint_id < 0) continue;
+
+            try
+            {
+                // 1) Retrieve final skinning matrix from our precomputed list
+                const HMM_Mat4& skinning_matrix = precomputed_matrices.at(joint_id);
+
+                // 2) Transform position by the precomputed matrix
+                const HMM_Vec3 transformed_position =
+                    MathFacade::transform_vec3(skinning_matrix, original_position);
+
+                // 3) Add weighted contribution to the final position
                 new_position.X += transformed_position.X * weight;
                 new_position.Y += transformed_position.Y * weight;
                 new_position.Z += transformed_position.Z * weight;
             }
-            catch (const std::out_of_range&) {
-                // Joint ID out of range - just skip this influence
-                continue;
+            catch (const std::out_of_range&) 
+            {
+                // Joint ID out of range - just skip this influence 
+                continue; 
             }
         }
-        
+
         // Update the skinned mesh vertex
         skinned_mesh.vertices[i].x = new_position.X;
         skinned_mesh.vertices[i].y = new_position.Y;
@@ -258,7 +268,7 @@ void MeshSkinner::apply_vertex_transformations()
 
     // Ensure progress bar shows 100% at the end
     progress_bar.set_progress(100);
-    std::cout << std::endl << "Skinning completed successfully" << std::endl;
+    std::cout << "\nSkinning completed successfully\n";
 }
 
 void MeshSkinner::record_timing(const std::string& operation_name, double duration)
