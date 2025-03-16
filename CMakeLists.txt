@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(MeshSkinner VERSION 0.1.0 LANGUAGES CXX)
 
-# Set C++ standard to 17 (as I'm using std::filesystem)
+# Set C++ standard to 17 (as I'm using std::filesystem and parallel algorithms)
 set(CMAKE_CXX_STANDARD 17)
 
 # Generate symbols for debugging
