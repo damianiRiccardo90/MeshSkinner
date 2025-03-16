@@ -213,6 +213,10 @@ void MeshSkinner::apply_vertex_transformations(const std::vector<HMM_Mat4>& prec
         indicators::option::PrefixText{"Applying skinning"}
     };
 
+    // Update the progress bar in 1% increments
+    // if total_vertices < 100, ensure we still progress occasionally by maxing with 1
+    const size_t update_interval = std::max<size_t>(1, total_vertices / 100);
+
     // Apply linear blend skinning to each vertex
     for (size_t i = 0; i < total_vertices; i++)
     {
@@ -262,8 +266,12 @@ void MeshSkinner::apply_vertex_transformations(const std::vector<HMM_Mat4>& prec
         skinned_mesh.vertices[i].y = new_position.Y;
         skinned_mesh.vertices[i].z = new_position.Z;
 
-        // Update progress bar
-        progress_bar.set_progress(static_cast<float>(i + 1) / total_vertices * 100);
+        // Update the progress bar only every 1% interval (or at the very end)
+        if ((i % update_interval) == 0 || i == total_vertices - 1)
+        {
+            progress_bar.set_progress(
+                100.f * static_cast<float>(i + 1) / static_cast<float>(total_vertices));
+        }
     }
 
     // Ensure progress bar shows 100% at the end
