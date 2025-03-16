@@ -10,63 +10,91 @@
 class Json;
 
 /**
- * @brief Represents the influence of a single joint on a vertex
+ * @brief Represents the weights and joint influences for a single vertex
  *
- * This structure defines how much influence a specific joint has on the 
- * deformation of a vertex during skeletal animation. Each vertex may be
- * influenced by multiple joints with different weights.
+ * This structure stores a fixed number of joint influences for each vertex,
+ * optimized for cache efficiency and memory usage. Each vertex has up to
+ * MAX_INFLUENCES joints affecting its position.
  */
-struct JointInfluence 
+struct VertexWeights 
 {
     /**
-     * @brief ID of the joint in the skeleton
-     *
-     * References a specific joint in the skeleton hierarchy by its index.
+     * @brief Maximum number of joint influences per vertex
      */
-    int joint_id;
-
+    static constexpr size_t MAX_INFLUENCES = 4;
+    
     /**
-     * @brief Weight of influence (between 0.f and 1.f)
+     * @brief IDs of the joints influencing this vertex
      *
-     * Determines how much this joint affects the vertex position.
-     * Higher values indicate stronger influence on the final vertex position.
-     * The sum of all weights for a single vertex should typically equal 1.0.
+     * Array of joint indices, corresponding by position to the weights array.
+     * Unused influences should have a joint_id of 0 and weight of 0.
      */
-    float weight;
+    int joint_ids[MAX_INFLUENCES];
+    
+    /**
+     * @brief Weights of each joint's influence on this vertex
+     *
+     * Array of weight values between 0 and 1, with the sum typically equaling 1.0.
+     * Higher values indicate stronger influence on the final vertex position.
+     */
+    float weights[MAX_INFLUENCES];
 };
 
 /**
  * @brief Contains all data needed for mesh skinning operations
  *
- * This structure holds the vertex-joint influence mappings and the computed
- * transformation matrices used during the skinning process. It provides the
- * necessary data to deform a mesh according to an animated skeleton pose.
+ * This structure holds the vertex-joint influence mappings and the transformation
+ * matrices used during the skinning process. It provides the necessary data to
+ * deform a mesh according to pose matrices and inverse bind pose matrices.
  */
 struct SkinningData 
 {
     /**
-     * @brief Parses skinning data (weights) from a Json object.
-     * @param json_obj The source Json containing "vertex_weights".
-     * @return A nested vector of JointInfluence for each vertex.
-     * @throws std::runtime_error if "vertex_weights" or fields are missing/invalid.
+     * @brief Parses bone weights from a Json object.
+     * @param json_obj The source Json containing weight and index arrays for each vertex.
+     * @return A vector of VertexWeights for each vertex.
+     * @throws std::runtime_error if required fields are missing or invalid.
      */
-    static std::vector<std::vector<JointInfluence>> from_json(const Json& json_obj);
-
+    static std::vector<VertexWeights> parse_weights_from_json(const Json& json_obj);
+    
+    /**
+     * @brief Parses transformation matrices from a Json array.
+     * @param json_obj The source Json array of matrices (each with 16 elements).
+     * @return A vector of HMM_Mat4 matrices.
+     * @throws std::runtime_error if matrices are malformed.
+     */
+    static std::vector<HMM_Mat4> parse_matrices_from_json(const Json& json_obj);
+    
     /**
      * @brief Weights for each vertex 
      *
-     * The outer vector corresponds to vertices in the mesh.
-     * The inner vector contains all joint influences for a single vertex.
-     * Each vertex can be influenced by multiple joints with varying weights.
+     * Each element corresponds to a vertex in the mesh and contains
+     * the joint IDs and weights that influence that vertex.
      */
-    std::vector<std::vector<JointInfluence>> weights;
+    std::vector<VertexWeights> weights;
     
     /**
-     * @brief Skinning matrices calculated during the skinning process
-     *
-     * Each matrix represents the transformation from bind pose to current pose
-     * for a specific joint. These matrices are used to transform vertices
-     * according to the current skeleton pose.
+     * @brief Inverse bind pose matrices for each joint
+     * 
+     * Each matrix represents the inverse of a joint's transformation in the bind pose.
+     * Used to calculate the difference between bind pose and current pose.
      */
-    std::vector<HMM_Mat4> skinning_matrices;
+    std::vector<HMM_Mat4> inverse_bind_matrices;
+    
+    /**
+     * @brief Current pose matrices for each joint
+     *
+     * Each matrix represents the transformation of a joint in the current pose.
+     * Combined with inverse bind matrices to create skinning matrices.
+     */
+    std::vector<HMM_Mat4> pose_matrices;
+    
+    /**
+     * @brief Calculates and returns the skinning matrix for a specific joint
+     * 
+     * @param joint_id The joint ID to get the skinning matrix for
+     * @return The skinning matrix (pose_matrix * inverse_bind_matrix)
+     * @throws std::out_of_range if joint_id is invalid
+     */
+    HMM_Mat4 get_skinning_matrix(int joint_id) const;
 };
