@@ -43,6 +43,12 @@ Mesh ObjFacade::load_obj_mesh(const std::string& filePath)
         throw std::runtime_error("Failed to load OBJ from " + filePath + ": " + err);
     }
 
+    // Add validation for empty geometry
+    if (attrib.vertices.empty() || shapes.empty())
+    {
+        throw std::runtime_error("OBJ file contains no valid geometry: " + filePath);
+    }
+
     // Convert the loaded data into our Mesh structure
     Mesh mesh;
     

@@ -35,7 +35,7 @@ bool TestSuite::run()
     }
     
     std::cout << "\nResults: " << passed << "/" << tests.size() 
-              << " tests passed in suite '" << suite_name << std::endl;
+              << " tests passed in suite '" << suite_name << "'\n";
     
     return passed == tests.size();
 }

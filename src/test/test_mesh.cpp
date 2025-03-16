@@ -128,7 +128,7 @@ TestSuite create_mesh_tests()
 
         try 
         {
-            mesh = ObjFacade::load_obj_mesh("test_data/cube.obj");
+            mesh = ObjFacade::load_obj_mesh("asset/cube.obj");
         } 
         catch (const std::exception& e) 
         {
@@ -279,10 +279,10 @@ TestSuite create_mesh_tests()
         try 
         {
             // Load original mesh
-            Mesh original_mesh = ObjFacade::load_obj_mesh("test_data/cube.obj");
+            Mesh original_mesh = ObjFacade::load_obj_mesh("asset/cube.obj");
             
             // Save to a temporary file
-            const std::string temp_save_path = "test_data/temp_save_test.obj";
+            const std::string temp_save_path = "asset/temp_save_test.obj";
             
             if (!ObjFacade::save_obj_mesh(temp_save_path, original_mesh)) 
             {
