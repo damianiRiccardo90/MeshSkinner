@@ -7,10 +7,11 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/MeshSkinner.exe",
             "args": [
-                "${workspaceFolder}/asset/bone_weights.json",
                 "${workspaceFolder}/asset/input_mesh.obj",
+                "${workspaceFolder}/asset/bone_weights.json",
                 "${workspaceFolder}/asset/inverse_bind_pose.json",
-                "${workspaceFolder}/asset/output_pose.json"
+                "${workspaceFolder}/asset/output_pose.json",
+                "${workspaceFolder}/asset/output_mesh.obj"
             ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "Build (CMake)",

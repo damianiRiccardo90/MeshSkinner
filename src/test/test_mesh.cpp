@@ -60,17 +60,17 @@ TestSuite create_mesh_tests()
     suite.add_test("Handle Empty File", []() 
     {
         // Create a temporary empty file
-        const std::string tempFilePath = "asset/temp_empty.obj";
-        std::ofstream tempFile(tempFilePath);
+        const std::string temp_file_path = "asset/temp_empty.obj";
+        std::ofstream temp_file(temp_file_path);
         
         try 
         {
-            ObjFacade::load_obj_mesh(tempFilePath);
+            ObjFacade::load_obj_mesh(temp_file_path);
             TestUtils::print_colored("Failed to reject empty file\n", 
                 TestUtils::ConsoleColor::Red);
             
             // Clean up
-            std::filesystem::remove(tempFilePath);
+            std::filesystem::remove(temp_file_path);
             
             return false;
         } 
@@ -80,7 +80,7 @@ TestSuite create_mesh_tests()
                 TestUtils::ConsoleColor::Green);
             
             // Clean up
-            std::filesystem::remove(tempFilePath);
+            std::filesystem::remove(temp_file_path);
             
             return true;
         }
@@ -90,22 +90,22 @@ TestSuite create_mesh_tests()
     suite.add_test("Handle File With Only Headers", []() 
     {
         // Create a temporary file with only headers
-        const std::string tempFilePath = "asset/temp_headers_only.obj";
-        std::ofstream tempFile(tempFilePath);
-        tempFile << "# This is a comment\n";
-        tempFile << "# Another comment line\n";
-        tempFile << "mtllib materials.mtl\n";
-        tempFile << "o TestObject\n";
+        const std::string temp_file_path = "asset/temp_headers_only.obj";
+        std::ofstream temp_file(temp_file_path);
+        temp_file << "# This is a comment\n";
+        temp_file << "# Another comment line\n";
+        temp_file << "mtllib materials.mtl\n";
+        temp_file << "o TestObject\n";
         // No actual geometry data
         
         try 
         {
-            ObjFacade::load_obj_mesh(tempFilePath);
+            ObjFacade::load_obj_mesh(temp_file_path);
             TestUtils::print_colored("Failed to handle file with only headers\n", 
                 TestUtils::ConsoleColor::Red);
             
             // Clean up
-            std::filesystem::remove(tempFilePath);
+            std::filesystem::remove(temp_file_path);
             
             return false;
         } 
@@ -115,7 +115,7 @@ TestSuite create_mesh_tests()
                 TestUtils::ConsoleColor::Green);
             
             // Clean up
-            std::filesystem::remove(tempFilePath);
+            std::filesystem::remove(temp_file_path);
             
             return true;
         }
@@ -247,14 +247,14 @@ TestSuite create_mesh_tests()
         }
 
         // Check mesh bounds
-        std::vector<HMM_Vec3> vertexPositions;
-        vertexPositions.reserve(mesh.vertices.size());
+        std::vector<HMM_Vec3> vertex_positions;
+        vertex_positions.reserve(mesh.vertices.size());
         for (const auto& vertex : mesh.vertices) 
         {
-            vertexPositions.push_back(HMM_V3(vertex.x, vertex.y, vertex.z));
+            vertex_positions.push_back(HMM_V3(vertex.x, vertex.y, vertex.z));
         }
 
-        const auto [min_bounds, max_bounds] = TestUtils::calculate_mesh_bounds(vertexPositions);
+        const auto [min_bounds, max_bounds] = TestUtils::calculate_mesh_bounds(vertex_positions);
         std::cout << "Mesh bounds: Min(" 
                   << min_bounds.X << ", " << min_bounds.Y << ", " << min_bounds.Z << ") Max("
                   << max_bounds.X << ", " << max_bounds.Y << ", " << max_bounds.Z << ")\n";

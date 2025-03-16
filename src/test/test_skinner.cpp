@@ -73,22 +73,23 @@ TestSuite create_skinner_tests()
         }
     });
     
-    suite.add_test("Load Valid Bind Pose", []() 
+    suite.add_test("Load Valid Inverse Bind Pose Matrices", []() 
     {
         try 
         {
             MeshSkinner skinner;
 
-            const bool success = skinner.load_bind_pose("asset/inverse_bind_pose.json");
+            const bool success = skinner.load_inverse_bind_matrices(
+                "asset/inverse_bind_pose.json");
             
             if (success) 
             {
-                TestUtils::print_colored("Loading bind pose: Success\n", 
+                TestUtils::print_colored("Loading inverse bind pose: Success\n", 
                     TestUtils::ConsoleColor::Green);
             } 
             else 
             {
-                TestUtils::print_colored("Loading bind pose: Failed\n", 
+                TestUtils::print_colored("Loading inverse bind pose: Failed\n", 
                     TestUtils::ConsoleColor::Red);
             }
             return success;
@@ -96,28 +97,29 @@ TestSuite create_skinner_tests()
         catch (const std::exception& e) 
         {
             TestUtils::set_console_color(TestUtils::ConsoleColor::Red);
-            std::cout << "Loading bind pose failed with exception: " << e.what() << std::endl;
+            std::cout << "Loading inverse bind pose failed with exception: " 
+                      << e.what() << std::endl;
             TestUtils::reset_console_color();
             return false;
         }
     });
     
-    suite.add_test("Load Valid New Pose", []() 
+    suite.add_test("Load Valid Output Pose Matrices", []() 
     {
         try 
         {
             MeshSkinner skinner;
 
-            const bool success = skinner.load_new_pose("asset/output_pose.json");
+            const bool success = skinner.load_output_pose_matrices("asset/output_pose.json");
             
             if (success) 
             {
-                TestUtils::print_colored("Loading new pose: Success\n", 
+                TestUtils::print_colored("Loading output pose: Success\n", 
                     TestUtils::ConsoleColor::Green);
             } 
             else 
             {
-                TestUtils::print_colored("Loading new pose: Failed\n", 
+                TestUtils::print_colored("Loading output pose: Failed\n", 
                     TestUtils::ConsoleColor::Red);
             }
             return success;
@@ -125,7 +127,7 @@ TestSuite create_skinner_tests()
         catch (const std::exception& e) 
         {
             TestUtils::set_console_color(TestUtils::ConsoleColor::Red);
-            std::cout << "Loading new pose failed with exception: " << e.what() << std::endl;
+            std::cout << "Loading output pose failed with exception: " << e.what() << std::endl;
             TestUtils::reset_console_color();
             return false;
         }
@@ -226,19 +228,20 @@ TestSuite create_skinner_tests()
             TestUtils::reset_console_color();
             success &= loaded_weights;
             
-            const bool loaded_bind_pose = skinner.load_bind_pose("asset/inverse_bind_pose.json");
+            const bool loaded_bind_pose = skinner.load_inverse_bind_matrices(
+                "asset/inverse_bind_pose.json");
             TestUtils::set_console_color(
                 loaded_bind_pose ? TestUtils::ConsoleColor::Green : TestUtils::ConsoleColor::Red);
-            std::cout << "Loaded bind pose: " << (loaded_bind_pose ? "Yes" : "No") << std::endl;
+            std::cout << "Loaded inverse bind pose: " << (loaded_bind_pose ? "Yes" : "No") << std::endl;
             TestUtils::reset_console_color();
             success &= loaded_bind_pose;
             
-            const bool loaded_new_pose = skinner.load_new_pose("asset/output_pose.json");
+            const bool loaded_output_pose = skinner.load_output_pose_matrices("asset/output_pose.json");
             TestUtils::set_console_color(
-                loaded_new_pose ? TestUtils::ConsoleColor::Green : TestUtils::ConsoleColor::Red);
-            std::cout << "Loaded new pose: " << (loaded_new_pose ? "Yes" : "No") << std::endl;
+                loaded_output_pose ? TestUtils::ConsoleColor::Green : TestUtils::ConsoleColor::Red);
+            std::cout << "Loaded output pose: " << (loaded_output_pose ? "Yes" : "No") << std::endl;
             TestUtils::reset_console_color();
-            success &= loaded_new_pose;
+            success &= loaded_output_pose;
             
             if (!success) 
             {

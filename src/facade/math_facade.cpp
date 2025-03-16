@@ -58,3 +58,14 @@ HMM_Mat4 MathFacade::translate(float x, float y, float z)
 {
     return HMM_Translate(HMM_V3(x, y, z));
 }
+
+float MathFacade::to_radians(float degrees)
+{
+    // HandmadeMath might have a function for this, but if not:
+    return degrees * (HMM_PI / 180.0f);
+}
+
+float MathFacade::to_degrees(float radians)
+{
+    return radians * (180.0f / HMM_PI);
+}

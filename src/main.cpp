@@ -18,10 +18,15 @@ int main(int argc, char* argv[])
     )" << std::endl;
 
     // Ensure the num of input params is correct
-    if (argc < 5) 
+    if (argc < 6) 
     {
         std::cerr << "Usage: " << argv[0] << " <input_mesh.obj> <bone_weight.json> "
-                  << "<inverse_bind_pose.json> <output_pose.json>\n";
+                  << "<inverse_bind_pose.json> <output_pose.json> <output_mesh.obj>\n";
+        
+        // Wait for input so the console doesn't close immediately
+        std::cout << "Press Enter to exit...";
+        std::cin.get();
+
         return 1;
     }
 
@@ -30,13 +35,14 @@ int main(int argc, char* argv[])
     // Load input data
     if (!skinner.load_mesh(argv[1])) return 1;
     if (!skinner.load_weights(argv[2])) return 1;
-    if (!skinner.load_bind_pose(argv[3])) return 1;
+    if (!skinner.load_inverse_bind_matrices(argv[3])) return 1;
+    if (!skinner.load_output_pose_matrices(argv[4])) return 1;
 
     // Perform the skinning operation
     if (!skinner.perform_skinning()) return 1;
 
     // Save the result
-    if (!skinner.save_skinned_mesh(argv[4])) return 1;
+    if (!skinner.save_skinned_mesh(argv[5])) return 1;
     
     // Wait for input so the console doesn't close immediately
     std::cout << "Press Enter to exit...";

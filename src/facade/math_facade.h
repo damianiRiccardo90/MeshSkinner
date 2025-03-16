@@ -92,6 +92,20 @@ public:
      */
     static HMM_Mat4 translate(float x, float y, float z);
 
+    /**
+     * @brief Converts an angle from degrees to radians.
+     * @param degrees Angle in degrees.
+     * @return The equivalent angle in radians.
+     */
+    static float to_radians(float degrees);
+
+    /**
+     * @brief Converts an angle from radians to degrees.
+     * @param radians Angle in radians.
+     * @return The equivalent angle in degrees.
+     */
+    static float to_degrees(float radians);
+
 private:
 
     // Private constructor to discourage instantiation;

@@ -7,21 +7,19 @@
 
 // Local application imports
 #include "model/mesh.h"
-#include "model/skeleton.h"
 #include "model/skinning_data.h"
 
 
 /**
  * @brief A class for performing linear blend skinning on 3D meshes.
  *
- * This class manages the skinning process from loading input data (mesh, skeleton, weights)
- * to applying the transformations and outputting the deformed mesh. It implements
- * a complete workflow for mesh deformation using skeleton-based animation.
+ * This class manages the skinning process from loading input data (mesh, matrices, weights)
+ * to applying the transformations and outputting the deformed mesh.
  */
 class MeshSkinner
 {
 public:
-        
+
     /**
      * @brief Loads mesh data from an OBJ file via ObjFacade.
      * @param mesh_path The path to the OBJ file.
@@ -37,18 +35,18 @@ public:
     bool load_weights(const std::string& weights_path);
 
     /**
-     * @brief Loads bind pose skeleton from a JSON file.
-     * @param bind_pose_path The path to the bind pose JSON file.
-     * @return true if the bind pose was loaded successfully; otherwise false.
+     * @brief Loads inverse bind pose matrices from a JSON file.
+     * @param inv_bind_path The path to the inverse bind pose JSON file.
+     * @return true if the matrices were loaded successfully; otherwise false.
      */
-    bool load_bind_pose(const std::string& bind_pose_path);
+    bool load_inverse_bind_matrices(const std::string& inv_bind_path);
 
     /**
-     * @brief Loads new pose skeleton from a JSON file.
-     * @param new_pose_path The path to the new pose JSON file.
-     * @return true if the new pose was loaded successfully; otherwise false.
+     * @brief Loads pose matrices from a JSON file.
+     * @param pose_path The path to the pose matrices JSON file.
+     * @return true if the matrices were loaded successfully; otherwise false.
      */
-    bool load_new_pose(const std::string& new_pose_path);
+    bool load_output_pose_matrices(const std::string& pose_path);
     
     /**
      * @brief Performs the skinning operation using loaded data.
@@ -69,11 +67,6 @@ public:
     void print_timing_metrics() const;
 
 protected:
-    
-    /**
-     * @brief Calculates the skinning matrices from bind pose to new pose.
-     */
-    void calculate_vertex_transformations();
 
     /**
      * @brief Applies the skinning matrices to deform the vertices.
@@ -98,10 +91,6 @@ private:
     Mesh skinned_mesh;
     // The skinning data including weights and skinning matrices.
     SkinningData skin_data;
-    // The skeleton in bind (reference) pose.
-    Skeleton bind_pose;
-    // The skeleton in the new pose to deform toward.
-    Skeleton new_pose;
 
     // Performance tracking
     std::unordered_map<std::string, double> timing_metrics;
